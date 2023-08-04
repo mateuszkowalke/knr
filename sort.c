@@ -61,10 +61,11 @@ int main(int argc, char *argv[]) {
     }
 
     /* lqsort(lineptr, 0, nlines - 1); */
-    int (*cmp_func)(void *, void *) = (int (*)(void *, void *))(flags.dir ? dircmp : flags.numeric ? numcmp : strcmp); 
-    generic_qsort((void **)lineptr, 0, nlines - 1,
-                  cmp_func,
-                  flags.reverse);
+    int (*cmp_func)(void *, void *) =
+        (int (*)(void *, void *))(flags.dir       ? dircmp
+                                  : flags.numeric ? numcmp
+                                                  : strcmp);
+    generic_qsort((void **)lineptr, 0, nlines - 1, cmp_func, flags.reverse);
     writelines(lineptr, nlines);
     return EXIT_SUCCESS;
 }
@@ -143,10 +144,11 @@ int numcmp(const char *a, const char *b) {
 }
 
 int dircmp(const char *a, const char *b) {
-    double v1, v2;
+    if (((*a < 65 || *a > 90) && (*a < 97 || *a > 122) &&
+         (*a != ' ' || *a != '\t')) ||
+        ((*b < 65 || *b > 90) && (*b < 97 || *b > 122) &&
+         (*b != ' ' || *b != '\t')))
+        return 0;
 
-    v1 = atof(a);
-    v2 = atof(b);
-
-    return v1 > v2 ? 1 : v1 < v2 ? -1 : 0;
+    return a > b ? 1 : a < b ? -1 : 0;
 }

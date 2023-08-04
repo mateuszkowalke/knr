@@ -1,4 +1,2 @@
-fiRst line
-seCond Line
-third line
-sOme other line
+t[est
+t]ast
