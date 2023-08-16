@@ -1,6 +1,6 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 
 #define MAXTOKEN 100
 
@@ -56,13 +56,14 @@ void dirdcl(void) {
             strcat(out, token);
             strcat(out, " of");
         }
-   }
+    }
 }
 
 int gettoken(void) {
     int c;
     char *p = token;
-    while ((c = getchar()) == ' ' || c == '\t');
+    while ((c = getchar()) == ' ' || c == '\t')
+        ;
     if (c == '(') {
         if ((c = getchar()) == ')') {
             strcpy(token, "()");
@@ -71,5 +72,18 @@ int gettoken(void) {
             ungetc(c, stdin);
             return tokentype = '(';
         }
+    } else if (c == '[') {
+        for (*p++ = c; (*p++ = getchar()) != ']';)
+            ;
+        *p = '\0';
+        return tokentype = BRACKETS;
+    } else if (isalpha(c)) {
+        for (*p++ = c; isalnum(c = getchar());)
+            *p++ = c;
+        *p = '\0';
+        ungetc(c, stdin);
+        return tokentype = NAME;
+    } else {
+        return tokentype = c;
     }
 }
